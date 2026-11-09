@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chương 5 Python - Chuỗi và cấu trúc dữ liệu</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033;line-height:1.7}
+header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,#0d63ce,#1d7be3);color:white;padding:7px 18px}
+header h1{margin:0;font-size:18px}header p{margin:2px 0 0;font-size:11px}
+.wrap{max-width:1450px;margin:18px auto;display:grid;grid-template-columns:310px 1fr;gap:20px;padding:0 14px 40px}
+nav{position:sticky;top:64px;align-self:start;background:white;border:1px solid #dbe5f2;border-radius:16px;padding:14px;max-height:calc(100vh - 84px);overflow:auto}
+nav a{display:block;padding:8px;text-decoration:none;color:#172033;border-radius:8px;font-size:14px}
+nav a:hover{background:#eef5ff;color:#0d63ce}
+section{background:white;border:1px solid #dbe5f2;border-radius:18px;padding:22px;margin-bottom:18px}
+h2{color:#0d63ce;margin-top:0}h3{color:#23466f}h4{color:#194b8d}
+pre{background:#101827;color:#eef6ff;padding:14px;border-radius:12px;overflow:auto;white-space:pre-wrap}
+code{font-family:Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:12px 0}th,td{border:1px solid #dbe5f2;padding:9px;text-align:left;vertical-align:top}th{background:#eef5ff}
+.note,.warn,.guide,.teacher,.result,.theory{padding:13px 15px;border-radius:10px;margin:12px 0}
+.note{background:#eef5ff;border-left:5px solid #0d63ce}.warn{background:#fff5eb;border-left:5px solid #c65a11}.guide{background:#f5f3ff;border-left:5px solid #6d28d9}.teacher{background:#f0fdf4;border-left:5px solid #15803d}.result{background:#ecfdf5;border-left:5px solid #15803d}.theory{background:#f8fafc;border-left:5px solid #475569}
+.exercise{background:#fbfdff;border:1px solid #bfd0e7;border-radius:14px;padding:15px;margin:14px 0}.answer{display:none;margin-top:12px;border-top:1px solid #dbe5f2;padding-top:12px}.file{display:inline-block;background:#13233c;color:white;padding:4px 8px;border-radius:7px;font-family:Consolas,monospace}
+button{border:0;border-radius:8px;padding:9px 12px;font-weight:bold;cursor:pointer}.btn{background:#0d63ce;color:white}.secondary{background:#eaf3ff;color:#0d63ce}.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:980px){.wrap{grid-template-columns:1fr}nav{position:static;max-height:none}}
+@media print{header,nav,button,.toolbar{display:none!important}.wrap{display:block;margin:0;padding:0}.answer{display:block!important}}
+</style>
+</head>
+<body>
+<header><h1>PYTHON CƠ BẢN · CHƯƠNG 5</h1><p>Chuỗi · List · Tuple · Set · Dict · Copy · Mutable/Immutable</p></header>
+<div class="wrap">
+<nav>
+<h3>MỤC LỤC</h3>
+<a href="#intro">Tổng quan</a>
+<a href="#string">1. Chuỗi</a>
+<a href="#encoding">2. Encoding & Regex</a>
+<a href="#list">3. List</a>
+<a href="#tuple">4. Tuple & Unpacking</a>
+<a href="#set">5. Set</a>
+<a href="#dict">6. Dict</a>
+<a href="#comp">7. Comprehension</a>
+<a href="#copy">8. Shallow / Deep copy</a>
+<a href="#mutable">9. Mutable / Immutable</a>
+<a href="#baitap">10. Bài tập tổng hợp</a>
+<a href="#baitap10">11. 10 bài tập cuối chương</a>
+</nav>
+<main>
+
+<section id="intro">
+<h2>CHƯƠNG 5 – CHUỖI VÀ CẤU TRÚC DỮ LIỆU</h2>
+<p><b>Thời gian:</b> 9 giờ</p>
+<p>Chương này giúp sinh viên xử lý dữ liệu thực tế bằng các cấu trúc quan trọng của Python. Đây là nền tảng cho xử lý file, dữ liệu bảng, API và các chương trình quản lý sau này.</p>
+<div class="teacher"><b>Quy ước Việt hóa:</b> Hàm do chúng ta tự viết sẽ dùng tên tiếng Việt không dấu như <code>them_diem()</code>, <code>doi_ten()</code>. Hàm có sẵn của Python bắt buộc giữ tên tiếng Anh để chương trình chạy đúng, nhưng đều có chú thích nghĩa tiếng Việt.</div><div class="note"><b>Mạch kiến thức:</b> Chuỗi → List/Tuple → Set/Dict → Comprehension → Sao chép dữ liệu → Mutable/Immutable.</div>
+<div class="teacher"><b>Cách giảng:</b> liên hệ dữ liệu đời thật: họ tên là chuỗi; danh sách điểm là list; tọa độ là tuple; danh sách mã không trùng là set; hồ sơ sinh viên là dict.</div>
+<div class="toolbar"><button onclick="showAll()">Hiện tất cả lời giải</button><button class="secondary" onclick="hideAll()">Ẩn tất cả lời giải</button><button class="secondary" onclick="window.print()">In bài giảng</button></div>
+<div class="note"><h3 style="margin-top:0">TỪ TIẾNG ANH BẮT BUỘC GIỮ NGUYÊN TRONG PYTHON</h3><p><b>Quan trọng:</b> đây là tên hàm/method có sẵn của Python nên không được đổi sang tiếng Việt trong code. Khi giảng, đọc nghĩa tiếng Việt như bảng dưới.</p><table><tr><th>Từ trong code</th><th>Nghĩa tiếng Việt</th><th>Cách hiểu</th></tr>
+<tr><td><code>print()</code></td><td>hiển thị / in ra</td><td>Đưa dữ liệu ra màn hình</td></tr>
+<tr><td><code>input()</code></td><td>nhập dữ liệu</td><td>Nhận dữ liệu từ bàn phím</td></tr>
+<tr><td><code>len()</code></td><td>độ dài / số lượng</td><td>Đếm ký tự hoặc phần tử</td></tr>
+<tr><td><code>strip()</code></td><td>bỏ khoảng trắng</td><td>Bỏ khoảng trắng đầu và cuối chuỗi</td></tr>
+<tr><td><code>lower()</code></td><td>chữ thường</td><td>Chuyển thành chữ thường</td></tr>
+<tr><td><code>upper()</code></td><td>chữ hoa</td><td>Chuyển thành chữ hoa</td></tr>
+<tr><td><code>title()</code></td><td>viết hoa đầu từ</td><td>Viết hoa chữ cái đầu mỗi từ</td></tr>
+<tr><td><code>replace()</code></td><td>thay thế</td><td>Thay chuỗi con bằng chuỗi khác</td></tr>
+<tr><td><code>find()</code></td><td>tìm vị trí</td><td>Trả vị trí chuỗi con</td></tr>
+<tr><td><code>split()</code></td><td>tách</td><td>Tách chuỗi thành list</td></tr>
+<tr><td><code>join()</code></td><td>nối</td><td>Nối nhiều chuỗi thành một chuỗi</td></tr>
+<tr><td><code>append()</code></td><td>thêm cuối</td><td>Thêm 1 phần tử vào cuối list</td></tr>
+<tr><td><code>insert()</code></td><td>chèn</td><td>Chèn vào vị trí xác định</td></tr>
+<tr><td><code>extend()</code></td><td>thêm nhiều</td><td>Thêm nhiều phần tử vào list</td></tr>
+<tr><td><code>remove()</code></td><td>xóa theo giá trị</td><td>Xóa phần tử có giá trị chỉ định</td></tr>
+<tr><td><code>pop()</code></td><td>lấy ra và xóa</td><td>Xóa phần tử và trả lại giá trị</td></tr>
+<tr><td><code>sort()</code></td><td>sắp xếp tại chỗ</td><td>Sửa trực tiếp list gốc</td></tr>
+<tr><td><code>sorted()</code></td><td>tạo bản đã sắp xếp</td><td>Trả về list mới</td></tr>
+<tr><td><code>get()</code></td><td>lấy giá trị</td><td>Lấy value theo key an toàn hơn</td></tr>
+<tr><td><code>keys()</code></td><td>các khóa</td><td>Lấy toàn bộ key</td></tr>
+<tr><td><code>values()</code></td><td>các giá trị</td><td>Lấy toàn bộ value</td></tr>
+<tr><td><code>items()</code></td><td>cặp khóa–giá trị</td><td>Lấy key và value cùng lúc</td></tr>
+<tr><td><code>copy()</code></td><td>sao chép</td><td>Tạo sao chép nông</td></tr>
+<tr><td><code>deepcopy()</code></td><td>sao chép sâu</td><td>Sao chép cả dữ liệu lồng nhau</td></tr>
+<tr><td><code>encode()</code></td><td>mã hóa thành byte</td><td>Chuyển chuỗi sang bytes</td></tr>
+<tr><td><code>decode()</code></td><td>giải mã byte</td><td>Chuyển bytes về chuỗi</td></tr>
+<tr><td><code>search()</code></td><td>tìm theo mẫu</td><td>Tìm chuỗi bằng regex</td></tr></table></div></section>
+
+<section id="string">
+<h2>1. CHUỖI – STRING (CHUỖI KÝ TỰ)</h2>
+<div class="theory">
+<h3>1.1. Chuỗi là gì?</h3>
+<p>Chuỗi (<code>str</code>) là dãy ký tự. Chuỗi có thể chứa chữ, số, khoảng trắng và ký tự đặc biệt. Chuỗi là kiểu dữ liệu <b>immutable</b>, nghĩa là không sửa trực tiếp từng ký tự.</p>
+
+<h3>1.2. Index</h3>
+<p>Python đánh chỉ số từ 0. Chỉ số âm đi từ cuối chuỗi.</p>
+<pre><code>text = "Python"
+
+# text[0] lấy ký tự đầu tiên
+print(text[0])
+
+# text[-1] lấy ký tự cuối cùng
+print(text[-1])</code></pre>
+<div class="result"><b>Kết quả:</b><pre>P
+n</pre></div>
+
+<h3>1.3. Slicing</h3>
+<p>Cú pháp: <code>text[start:stop:step]</code>. Vị trí stop không được lấy.</p>
+<pre><code>text = "Python"
+
+# Lấy từ vị trí 0 đến trước vị trí 3
+print(text[0:3])
+
+# Từ đầu đến trước vị trí 4
+print(text[:4])
+
+# Từ vị trí 2 đến cuối
+print(text[2:])
+
+# Bước -1 để đảo chuỗi
+print(text[::-1])</code></pre>
+<div class="result"><b>Kết quả:</b><pre>Pyt
+Pyth
+thon
+nohtyP</pre></div>
+
+<h3>1.4. Nối chuỗi</h3>
+<pre><code>first_name = "An"
+last_name = "Nguyen"
+
+# Dùng + để nối chuỗi
+full_name = first_name + " " + last_name
+
+print(full_name)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>An Nguyen</pre></div>
+
+<h3>1.5. Các method quan trọng</h3>
+<table>
+<tr><th>Method</th><th>Ý nghĩa</th></tr>
+<tr><td>lower()</td><td>Chuyển chữ thường</td></tr>
+<tr><td>upper()</td><td>Chuyển chữ hoa</td></tr>
+<tr><td>title()</td><td>Viết hoa đầu từ</td></tr>
+<tr><td>strip()</td><td>Bỏ khoảng trắng đầu/cuối</td></tr>
+<tr><td>replace()</td><td>Thay nội dung</td></tr>
+<tr><td>find()</td><td>Tìm vị trí</td></tr>
+<tr><td>split()</td><td>Tách chuỗi thành list</td></tr>
+<tr><td>join()</td><td>Nối list chuỗi</td></tr>
+</table>
+
+<h3>1.6. Chuẩn hóa họ tên</h3>
+<pre><code># Dữ liệu ban đầu có khoảng trắng và chữ hoa/thường chưa chuẩn
+name = "   nGuYeN vaN aN   "
+
+# strip() tạo chuỗi mới đã bỏ khoảng trắng đầu/cuối
+name = name.strip()
+
+# title() tạo chuỗi mới có chữ đầu từ viết hoa
+name = name.title()
+
+print(name)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>Nguyen Van An</pre></div>
+
+<h3>1.7. Tìm kiếm và thay thế</h3>
+<pre><code>text = "Hoc Python rat vui"
+
+# find() trả vị trí bắt đầu của từ cần tìm
+position = text.find("Python")
+
+# replace() không sửa chuỗi gốc mà tạo chuỗi mới
+new_text = text.replace("vui", "thu vi")
+
+print(position)
+print(new_text)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>4
+Hoc Python rat thu vi</pre></div>
+
+<h3>1.8. split() và join()</h3>
+<pre><code>text = "An,Binh,Lan"
+
+# split(",") tách chuỗi tại dấu phẩy
+names = text.split(",")
+
+print(names)
+
+# join() nối các phần tử chuỗi bằng " - "
+result = " - ".join(names)
+
+print(result)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>['An', 'Binh', 'Lan']
+An - Binh - Lan</pre></div>
+</div>
+
+<div class="exercise">
+<h4>Bài tập – Chuẩn hóa họ tên</h4>
+<p><b>Tên file:</b> <span class="file">bt01_chuan_hoa_ten.py</span></p>
+<div class="guide"><ol><li>Nhập họ tên.</li><li>Dùng strip().</li><li>Dùng title().</li><li>In kết quả.</li></ol></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer"><pre><code># Nhập họ tên từ bàn phím
+name = input("Nhập họ tên: ")
+
+# Bỏ khoảng trắng đầu và cuối
+name = name.strip()
+
+# Chuẩn hóa chữ cái đầu mỗi từ
+name = name.title()
+
+# Hiển thị kết quả
+print("Họ tên chuẩn:", name)</code></pre>
+<div class="result"><b>Ví dụ:</b><pre>Nhập họ tên:   nguyen van an
+Họ tên chuẩn: Nguyen Van An</pre></div></div>
+</div>
+</section>
+
+<section id="encoding">
+<h2>2. ENCODING (MÃ HÓA KÝ TỰ) VÀ REGEX (BIỂU THỨC CHÍNH QUY)</h2>
+<div class="theory">
+<h3>2.1. Encoding là gì?</h3>
+<p>Máy tính lưu ký tự thành byte. Encoding là quy tắc chuyển ký tự thành byte. UTF-8 được dùng rất phổ biến và hỗ trợ tiếng Việt.</p>
+<pre><code>text = "Cà Mau"
+
+# Chuyển chuỗi sang bytes bằng UTF-8
+data = text.encode("utf-8")
+
+print(data)
+
+# Chuyển bytes trở lại chuỗi
+decoded = data.decode("utf-8")
+
+print(decoded)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>b'C\xc3\xa0 Mau'
+Cà Mau</pre></div>
+
+<h3>2.2. Khi nào cần encoding?</h3>
+<ul><li>Đọc/ghi file.</li><li>Gửi dữ liệu qua mạng.</li><li>Xử lý tiếng Việt.</li></ul>
+
+<h3>2.3. Regex là gì?</h3>
+<p>Regex là mẫu dùng để tìm kiếm hoặc kiểm tra chuỗi. Python dùng module <code>re</code>.</p>
+<pre><code>import re
+
+text = "Email: an@example.com"
+
+# \S+ nghĩa là một hoặc nhiều ký tự không phải khoảng trắng
+# @ là ký tự @
+# \. là dấu chấm thật
+match = re.search(r"\S+@\S+\.\S+", text)
+
+if match:
+    # group() lấy phần chuỗi khớp mẫu
+    print(match.group())</code></pre>
+<div class="result"><b>Kết quả:</b><pre>an@example.com</pre></div>
+<div class="warn"><b>Lưu ý:</b> regex mạnh nhưng khó đọc. Bài đơn giản nên ưu tiên string methods.</div>
+</div>
+</section>
+
+<section id="list">
+<h2>3. LIST (DANH SÁCH) – DỮ LIỆU CÓ THỨ TỰ</h2>
+<div class="theory">
+<h3>3.1. List là gì?</h3>
+<p>List có thứ tự, cho phép phần tử trùng và có thể thay đổi sau khi tạo.</p>
+
+<h3>3.2. Truy cập và slicing</h3>
+<pre><code>numbers = [10, 20, 30, 40, 50]
+
+# Lấy phần tử đầu tiên
+print(numbers[0])
+
+# Lấy từ vị trí 1 đến trước vị trí 4
+print(numbers[1:4])
+
+# Đảo list
+print(numbers[::-1])</code></pre>
+<div class="result"><b>Kết quả:</b><pre>10
+[20, 30, 40]
+[50, 40, 30, 20, 10]</pre></div>
+
+<h3>3.3. Thêm dữ liệu</h3>
+<table>
+<tr><th>Method</th><th>Khi dùng</th></tr>
+<tr><td>append(x)</td><td>Thêm một phần tử cuối list</td></tr>
+<tr><td>insert(i,x)</td><td>Chèn tại vị trí i</td></tr>
+<tr><td>extend(data)</td><td>Thêm nhiều phần tử</td></tr>
+</table>
+<pre><code>names = ["An", "Binh"]
+
+# Thêm cuối
+names.append("Lan")
+
+# Chèn vào vị trí 1
+names.insert(1, "Minh")
+
+# Thêm nhiều phần tử
+names.extend(["Hoa", "Nam"])
+
+print(names)</code></pre>
+
+<h3>3.4. Xóa dữ liệu</h3>
+<pre><code>names = ["An", "Binh", "Lan"]
+
+# Xóa theo giá trị
+names.remove("Binh")
+
+# pop() vừa xóa vừa trả phần tử cuối
+last_name = names.pop()
+
+print(names)
+print(last_name)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>['An']
+Lan</pre></div>
+
+<h3>3.5. Sửa dữ liệu</h3>
+<pre><code>scores = [7, 8, 6]
+
+# List mutable nên sửa trực tiếp được
+scores[2] = 9
+
+print(scores)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>[7, 8, 9]</pre></div>
+
+<h3>3.6. Sắp xếp</h3>
+<pre><code>numbers = [5, 2, 9, 1]
+
+# sort() thay đổi list gốc
+numbers.sort()
+
+print(numbers)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>[1, 2, 5, 9]</pre></div>
+
+<p><code>sorted()</code> trả list mới và không sửa list gốc.</p>
+</div>
+
+<div class="exercise">
+<h4>Bài tập – Quản lý điểm</h4>
+<div class="guide"><ol><li>Tạo list điểm.</li><li>append() thêm điểm.</li><li>Sửa một điểm bằng index.</li><li>sort().</li><li>In list.</li></ol></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer"><pre><code># Danh sách ban đầu
+scores = [7.0, 8.5, 6.0]
+
+# Thêm điểm mới
+scores.append(9.0)
+
+# Sửa điểm vị trí 2
+scores[2] = 7.5
+
+# Sắp xếp tăng dần
+scores.sort()
+
+print(scores)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>[7.0, 7.5, 8.5, 9.0]</pre></div></div>
+</div>
+</section>
+
+<section id="tuple">
+<h2>4. TUPLE (BỘ GIÁ TRỊ) VÀ UNPACKING (GIẢI NÉN)</h2>
+<div class="theory">
+<h3>4.1. Tuple là gì?</h3>
+<p>Tuple có thứ tự giống list nhưng immutable, nên phù hợp cho dữ liệu không nên thay đổi.</p>
+<pre><code>point = (10, 20)
+
+print(point[0])
+print(point[1])</code></pre>
+
+<h3>4.2. Khi nào dùng?</h3>
+<ul><li>Tọa độ.</li><li>Ngày tháng.</li><li>Kết quả trả về nhiều giá trị.</li></ul>
+
+<h3>4.3. Unpacking</h3>
+<pre><code>point = (10, 20)
+
+# Giải nén hai phần tử vào hai biến
+x, y = point
+
+print(x)
+print(y)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>10
+20</pre></div>
+
+<h3>4.4. Unpacking với *</h3>
+<pre><code>numbers = [1, 2, 3, 4, 5]
+
+# first nhận phần tử đầu
+# middle nhận các phần tử giữa
+# last nhận phần tử cuối
+first, *middle, last = numbers
+
+print(first)
+print(middle)
+print(last)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>1
+[2, 3, 4]
+5</pre></div>
+</div>
+</section>
+
+<section id="set">
+<h2>5. SET (TẬP HỢP) – KHÔNG TRÙNG</h2>
+<div class="theory">
+<h3>5.1. Set là gì?</h3>
+<p>Set chứa phần tử duy nhất, không trùng và không đảm bảo thứ tự.</p>
+<pre><code>numbers = {1, 2, 2, 3, 3}
+
+# Các phần tử trùng tự bị loại
+print(numbers)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>{1, 2, 3}</pre></div>
+
+<h3>5.2. Khi nào dùng?</h3>
+<ul><li>Loại trùng.</li><li>Kiểm tra phần tử tồn tại.</li><li>Phép toán tập hợp.</li></ul>
+
+<h3>5.3. Hợp, giao, hiệu</h3>
+<pre><code>a = {1, 2, 3}
+b = {3, 4, 5}
+
+# Hợp: tất cả phần tử
+print(a | b)
+
+# Giao: phần tử chung
+print(a & b)
+
+# Hiệu: có trong a nhưng không có trong b
+print(a - b)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>{1, 2, 3, 4, 5}
+{3}
+{1, 2}</pre></div>
+</div>
+</section>
+
+<section id="dict">
+<h2>6. DICT / DICTIONARY (TỪ ĐIỂN) – KHÓA VÀ GIÁ TRỊ</h2>
+<div class="theory">
+<h3>6.1. Dict là gì?</h3>
+<p>Dictionary lưu dữ liệu theo cặp <code>key: value</code>. Key phải duy nhất.</p>
+<pre><code>student = {
+    "name": "An",
+    "age": 18,
+    "major": "CNTT"
+}</code></pre>
+
+<h3>6.2. Truy cập</h3>
+<pre><code># Truy cập trực tiếp theo key
+print(student["name"])
+
+# get() an toàn hơn nếu key có thể không tồn tại
+print(student.get("age"))</code></pre>
+
+<h3>6.3. get() và []</h3>
+<pre><code># Nếu email chưa tồn tại, trả chuỗi mặc định
+print(student.get("email", "Chưa có email"))</code></pre>
+<div class="result"><b>Kết quả:</b><pre>Chưa có email</pre></div>
+
+<h3>6.4. Thêm và sửa</h3>
+<pre><code># Thêm key mới
+student["email"] = "an@example.com"
+
+# Sửa giá trị key đã có
+student["age"] = 19
+
+print(student)</code></pre>
+
+<h3>6.5. Duyệt dict</h3>
+<pre><code># items() trả từng cặp key-value
+for key, value in student.items():
+    print(f"{key}: {value}")</code></pre>
+
+<h3>6.6. keys(), values(), items()</h3>
+<table>
+<tr><th>Method</th><th>Ý nghĩa</th></tr>
+<tr><td>keys()</td><td>Lấy khóa</td></tr>
+<tr><td>values()</td><td>Lấy giá trị</td></tr>
+<tr><td>items()</td><td>Lấy cả key và value</td></tr>
+</table>
+</div>
+</section>
+
+<section id="comp">
+<h2>7. COMPREHENSION (CÚ PHÁP RÚT GỌN)</h2>
+<div class="theory">
+<h3>7.1. List comprehension</h3>
+<pre><code># Tạo bình phương 1 đến 5
+squares = [x ** 2 for x in range(1, 6)]
+
+print(squares)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>[1, 4, 9, 16, 25]</pre></div>
+
+<h3>7.2. Lọc dữ liệu</h3>
+<pre><code>scores = [4, 5, 7, 8, 3]
+
+# Chỉ giữ các điểm đạt
+passed = [score for score in scores if score >= 5]
+
+print(passed)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>[5, 7, 8]</pre></div>
+
+<h3>7.3. Dict comprehension</h3>
+<pre><code>names = ["An", "Binh", "Lan"]
+
+# Tạo dict: tên -> độ dài
+lengths = {
+    name: len(name)
+    for name in names
+}
+
+print(lengths)</code></pre>
+
+<h3>7.4. Set comprehension</h3>
+<pre><code>numbers = [1, 1, 2, 2, 3]
+
+# Set tự loại trùng
+unique_squares = {
+    number ** 2
+    for number in numbers
+}
+
+print(unique_squares)</code></pre>
+
+<div class="warn"><b>Không nên lạm dụng:</b> nếu biểu thức quá dài hoặc nhiều điều kiện, vòng lặp thường dễ đọc hơn.</div>
+</div>
+</section>
+
+<section id="copy">
+<h2>8. SHALLOW COPY (SAO CHÉP NÔNG) VÀ DEEP COPY (SAO CHÉP SÂU)</h2>
+<div class="theory">
+<h3>8.1. Gán không phải sao chép</h3>
+<pre><code>list_a = [1, 2, 3]
+
+# list_b không phải bản sao độc lập
+# Hai biến cùng trỏ tới một list
+list_b = list_a
+
+list_b[0] = 99
+
+print(list_a)
+print(list_b)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>[99, 2, 3]
+[99, 2, 3]</pre></div>
+
+<h3>8.2. Shallow copy</h3>
+<p>Shallow copy tạo container ngoài mới nhưng dữ liệu lồng bên trong vẫn có thể dùng chung.</p>
+<pre><code>original = [[1, 2], [3, 4]]
+
+# copy() tạo list ngoài mới
+shallow = original.copy()
+
+# Sửa list con
+shallow[0][0] = 99
+
+print(original)
+print(shallow)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>[[99, 2], [3, 4]]
+[[99, 2], [3, 4]]</pre></div>
+
+<h3>8.3. Deep copy</h3>
+<pre><code>import copy
+
+original = [[1, 2], [3, 4]]
+
+# deepcopy sao chép cả cấu trúc lồng nhau
+deep = copy.deepcopy(original)
+
+deep[0][0] = 99
+
+print(original)
+print(deep)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>[[1, 2], [3, 4]]
+[[99, 2], [3, 4]]</pre></div>
+
+<div class="teacher"><b>Cách giảng:</b> shallow copy giống sao chép bìa hồ sơ nhưng giấy bên trong vẫn dùng chung; deep copy là sao chép cả bìa lẫn giấy bên trong.</div>
+</div>
+</section>
+
+<section id="mutable">
+<h2>9. MUTABLE (CÓ THỂ THAY ĐỔI) VÀ IMMUTABLE (KHÔNG THỂ THAY ĐỔI TRỰC TIẾP)</h2>
+<div class="theory">
+<h3>9.1. Mutable</h3>
+<p>Đối tượng có thể thay đổi sau khi tạo: list, dict, set.</p>
+
+<h3>9.2. Immutable</h3>
+<p>Đối tượng không sửa trực tiếp: int, float, str, tuple.</p>
+
+<h3>9.3. List truyền vào hàm</h3>
+<pre><code>def them_diem(danh_sach_diem):
+    # append() thay đổi trực tiếp list nhận được
+    danh_sach_diem.append(10)
+
+
+danh_sach_diem = [7, 8, 9]
+
+them_diem(danh_sach_diem)
+
+# List gốc bên ngoài cũng thay đổi
+print(danh_sach_diem)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>[7, 8, 9, 10]</pre></div>
+
+<h3>9.4. Chuỗi truyền vào hàm</h3>
+<pre><code>def doi_ten(ten):
+    # Chuỗi immutable
+    # upper() tạo chuỗi mới
+    ten = ten.upper()
+
+    # Trả chuỗi mới
+    return ten
+
+
+ten_sinh_vien = "An"
+
+ten_moi = doi_ten(ten_sinh_vien)
+
+print(ten_sinh_vien)
+print(ten_moi)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>An
+AN</pre></div>
+
+<h3>9.5. Vì sao cần hiểu mutable?</h3>
+<ul><li>Tránh sửa nhầm dữ liệu gốc.</li><li>Biết khi nào cần copy.</li><li>Hiểu tác dụng phụ khi truyền list/dict/set vào hàm.</li></ul>
+</div>
+</section>
+
+<section id="baitap">
+<h2>10. BÀI TẬP TỔNG HỢP</h2>
+
+<div class="exercise">
+<h4>Bài 1. Phân tích câu</h4>
+<div class="guide"><ol><li>Nhập câu.</li><li>strip().</li><li>split().</li><li>Đếm từ.</li><li>In chữ hoa.</li></ol></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer"><pre><code># Nhập chuỗi
+text = input("Nhập một câu: ")
+
+# Bỏ khoảng trắng thừa
+text = text.strip()
+
+# Tách thành danh sách từ
+words = text.split()
+
+# Đếm số từ
+word_count = len(words)
+
+print("Số từ:", word_count)
+
+# Tạo chuỗi chữ hoa
+print("Chữ hoa:", text.upper())</code></pre></div>
+</div>
+
+<div class="exercise">
+<h4>Bài 2. Lọc điểm đạt</h4>
+<div class="guide"><ol><li>Tạo list điểm.</li><li>Dùng comprehension lọc >=5.</li><li>Tính trung bình điểm đạt.</li></ol></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer"><pre><code>scores = [4, 5, 7, 8, 3, 9]
+
+# Chỉ giữ điểm đạt
+passed_scores = [
+    score
+    for score in scores
+    if score >= 5
+]
+
+# Tính trung bình
+average = sum(passed_scores) / len(passed_scores)
+
+print("Điểm đạt:", passed_scores)
+print(f"Trung bình: {average:.2f}")</code></pre>
+<div class="result"><b>Kết quả:</b><pre>Điểm đạt: [5, 7, 8, 9]
+Trung bình: 7.25</pre></div></div>
+</div>
+
+<div class="exercise">
+<h4>Bài 3. Hồ sơ sinh viên bằng dict</h4>
+<div class="guide"><ol><li>Tạo dict name, age, scores.</li><li>Tính trung bình scores.</li><li>Thêm key average.</li><li>Duyệt items().</li></ol></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer"><pre><code>student = {
+    "name": "An",
+    "age": 18,
+    "scores": [7.5, 8.0, 6.5]
+}
+
+# Lấy list điểm
+scores = student["scores"]
+
+# Tính trung bình
+average = sum(scores) / len(scores)
+
+# Thêm dữ liệu mới vào dict
+student["average"] = average
+
+# In toàn bộ
+for key, value in student.items():
+    print(f"{key}: {value}")</code></pre></div>
+</div>
+
+<div class="exercise">
+<h4>Bài 4. Quan sát shallow copy</h4>
+<div class="guide"><ol><li>Tạo list lồng nhau.</li><li>copy().</li><li>Sửa phần tử trong list con.</li><li>In cả hai.</li><li>Giải thích vì sao cùng thay đổi.</li></ol></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer"><pre><code>original = [
+    ["An", 8],
+    ["Binh", 7]
+]
+
+# Shallow copy chỉ sao chép list ngoài
+copied = original.copy()
+
+# Hai biến vẫn dùng chung list con
+copied[0][1] = 10
+
+print("Original:", original)
+print("Copied:", copied)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>Original: [['An', 10], ['Binh', 7]]
+Copied: [['An', 10], ['Binh', 7]]</pre></div></div>
+</div>
+</section>
+
+
+<section id="baitap10">
+<h2>11. 10 BÀI TẬP CUỐI CHƯƠNG 5</h2>
+
+<div class="note">
+<b>Cách làm:</b> sinh viên đọc yêu cầu → xem phần hướng dẫn từng bước → tự viết code → chạy với dữ liệu mẫu → chỉ sau đó mới mở lời giải tham khảo.
+</div>
+
+<div class="exercise">
+<h4>Bài 1. Chuẩn hóa và phân tích họ tên</h4>
+<p><b>Tên file:</b> <span class="file">cuoichuong_01_ho_ten.py</span></p>
+<div class="guide">
+<ol>
+<li>Nhập một họ tên có thể có khoảng trắng thừa.</li>
+<li>Dùng <code>strip()</code> (loại khoảng trắng đầu/cuối).</li>
+<li>Dùng <code>title()</code> (viết hoa đầu từ).</li>
+<li>Dùng <code>split()</code> (tách chuỗi thành list) để đếm số từ.</li>
+<li>In họ tên chuẩn và số từ.</li>
+</ol>
+</div>
+<div class="result"><b>Dữ liệu mẫu:</b><pre>   nguyen van an   </pre><b>Kết quả mong đợi:</b><pre>Họ tên chuẩn: Nguyen Van An
+Số từ: 3</pre></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer">
+<pre><code># Nhập họ tên từ bàn phím
+ho_ten = input("Nhập họ tên: ")
+
+# strip() = loại khoảng trắng ở đầu và cuối
+ho_ten = ho_ten.strip()
+
+# title() = viết hoa chữ cái đầu mỗi từ
+ho_ten = ho_ten.title()
+
+# split() = tách chuỗi thành danh sách từ
+cac_tu = ho_ten.split()
+
+# len() = đếm số phần tử trong danh sách
+so_tu = len(cac_tu)
+
+print("Họ tên chuẩn:", ho_ten)
+print("Số từ:", so_tu)</code></pre>
+</div>
+</div>
+
+<div class="exercise">
+<h4>Bài 2. Đếm nguyên âm trong chuỗi</h4>
+<p><b>Tên file:</b> <span class="file">cuoichuong_02_dem_nguyen_am.py</span></p>
+<div class="guide">
+<ol>
+<li>Nhập một chuỗi.</li>
+<li>Chuyển chuỗi về chữ thường bằng <code>lower()</code>.</li>
+<li>Duyệt từng ký tự.</li>
+<li>Nếu ký tự thuộc tập <code>a, e, i, o, u</code> thì tăng biến đếm.</li>
+<li>In tổng số nguyên âm.</li>
+</ol>
+</div>
+<div class="result"><b>Dữ liệu mẫu:</b><pre>Python is useful</pre><b>Kết quả mong đợi:</b><pre>Số nguyên âm: 5</pre></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer">
+<pre><code># Nhập chuỗi
+chuoi = input("Nhập chuỗi: ")
+
+# lower() = chuyển toàn bộ về chữ thường
+chuoi = chuoi.lower()
+
+# Biến đếm ban đầu bằng 0
+so_nguyen_am = 0
+
+# Duyệt từng ký tự trong chuỗi
+for ky_tu in chuoi:
+    # in = kiểm tra một phần tử có thuộc chuỗi/tập hợp hay không
+    if ky_tu in "aeiou":
+        so_nguyen_am += 1
+
+print("Số nguyên âm:", so_nguyen_am)</code></pre>
+</div>
+</div>
+
+<div class="exercise">
+<h4>Bài 3. Quản lý danh sách điểm</h4>
+<p><b>Tên file:</b> <span class="file">cuoichuong_03_danh_sach_diem.py</span></p>
+<div class="guide">
+<ol>
+<li>Tạo một list điểm.</li>
+<li>Dùng <code>append()</code> để thêm điểm mới.</li>
+<li>Dùng index để sửa một điểm.</li>
+<li>Dùng <code>sort()</code> để sắp xếp tăng dần.</li>
+<li>In danh sách cuối cùng.</li>
+</ol>
+</div>
+<div class="result"><b>Kết quả mong đợi:</b><pre>[6.5, 7.0, 8.5, 9.0]</pre></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer">
+<pre><code># Tạo danh sách điểm ban đầu
+diem = [7.0, 8.5, 6.0]
+
+# append() = thêm một phần tử vào cuối list
+diem.append(9.0)
+
+# Sửa phần tử vị trí 2
+diem[2] = 6.5
+
+# sort() = sắp xếp trực tiếp list từ nhỏ đến lớn
+diem.sort()
+
+print(diem)</code></pre>
+</div>
+</div>
+
+<div class="exercise">
+<h4>Bài 4. Tìm điểm cao nhất và thấp nhất không dùng max()/min()</h4>
+<p><b>Tên file:</b> <span class="file">cuoichuong_04_max_min.py</span></p>
+<div class="guide">
+<ol>
+<li>Tạo list điểm.</li>
+<li>Gán điểm cao nhất và thấp nhất bằng phần tử đầu tiên.</li>
+<li>Duyệt từng điểm.</li>
+<li>Nếu điểm hiện tại lớn hơn thì cập nhật cao nhất.</li>
+<li>Nếu nhỏ hơn thì cập nhật thấp nhất.</li>
+</ol>
+</div>
+<div class="result"><b>Dữ liệu:</b><pre>[7.0, 8.5, 6.5, 9.0, 5.5]</pre><b>Kết quả mong đợi:</b><pre>Cao nhất: 9.0
+Thấp nhất: 5.5</pre></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer">
+<pre><code>diem = [7.0, 8.5, 6.5, 9.0, 5.5]
+
+# Khởi tạo bằng phần tử đầu tiên
+cao_nhat = diem[0]
+thap_nhat = diem[0]
+
+# Duyệt từng điểm
+for diem_so in diem:
+    if diem_so > cao_nhat:
+        cao_nhat = diem_so
+
+    if diem_so < thap_nhat:
+        thap_nhat = diem_so
+
+print("Cao nhất:", cao_nhat)
+print("Thấp nhất:", thap_nhat)</code></pre>
+</div>
+</div>
+
+<div class="exercise">
+<h4>Bài 5. Tuple và unpacking thông tin sinh viên</h4>
+<p><b>Tên file:</b> <span class="file">cuoichuong_05_tuple.py</span></p>
+<div class="guide">
+<ol>
+<li>Tạo tuple gồm mã sinh viên, họ tên, tuổi.</li>
+<li>Dùng unpacking (giải nén) vào ba biến.</li>
+<li>In từng thông tin.</li>
+</ol>
+</div>
+<div class="result"><b>Kết quả mong đợi:</b><pre>Mã SV: SV001
+Họ tên: Nguyen Van An
+Tuổi: 18</pre></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer">
+<pre><code># Tuple chứa dữ liệu cố định
+sinh_vien = ("SV001", "Nguyen Van An", 18)
+
+# Unpacking = giải nén tuple vào các biến
+ma_sv, ho_ten, tuoi = sinh_vien
+
+print("Mã SV:", ma_sv)
+print("Họ tên:", ho_ten)
+print("Tuổi:", tuoi)</code></pre>
+</div>
+</div>
+
+<div class="exercise">
+<h4>Bài 6. Loại bỏ dữ liệu trùng bằng set</h4>
+<p><b>Tên file:</b> <span class="file">cuoichuong_06_set.py</span></p>
+<div class="guide">
+<ol>
+<li>Tạo list tên môn học có phần tử lặp.</li>
+<li>Dùng <code>set()</code> để loại trùng.</li>
+<li>In kết quả.</li>
+</ol>
+</div>
+<div class="result"><b>Dữ liệu:</b><pre>["Python", "C", "Python", "Java", "C"]</pre><b>Kết quả:</b><pre>{'Python', 'C', 'Java'}  (thứ tự có thể khác)</pre></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer">
+<pre><code>mon_hoc = ["Python", "C", "Python", "Java", "C"]
+
+# set() = chuyển list thành tập hợp
+# Set tự loại phần tử trùng
+mon_hoc_khong_trung = set(mon_hoc)
+
+print(mon_hoc_khong_trung)</code></pre>
+</div>
+</div>
+
+<div class="exercise">
+<h4>Bài 7. Hồ sơ sinh viên bằng dictionary</h4>
+<p><b>Tên file:</b> <span class="file">cuoichuong_07_dict.py</span></p>
+<div class="guide">
+<ol>
+<li>Tạo dict gồm name, age, major.</li>
+<li>Thêm email.</li>
+<li>Sửa tuổi.</li>
+<li>Dùng <code>items()</code> để duyệt và in tất cả.</li>
+</ol>
+</div>
+<div class="result"><b>Kết quả mong đợi:</b><pre>name: An
+age: 19
+major: CNTT
+email: an@example.com</pre></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer">
+<pre><code># Dictionary = từ điển dữ liệu key-value
+sinh_vien = {
+    "name": "An",
+    "age": 18,
+    "major": "CNTT"
+}
+
+# Thêm một key mới
+sinh_vien["email"] = "an@example.com"
+
+# Cập nhật giá trị của key age
+sinh_vien["age"] = 19
+
+# items() = lấy từng cặp key-value
+for khoa, gia_tri in sinh_vien.items():
+    print(f"{khoa}: {gia_tri}")</code></pre>
+</div>
+</div>
+
+<div class="exercise">
+<h4>Bài 8. Dict comprehension tạo bảng bình phương</h4>
+<p><b>Tên file:</b> <span class="file">cuoichuong_08_dict_comprehension.py</span></p>
+<div class="guide">
+<ol>
+<li>Dùng <code>range(1, 6)</code>.</li>
+<li>Key là số.</li>
+<li>Value là bình phương của số đó.</li>
+<li>Dùng dict comprehension.</li>
+</ol>
+</div>
+<div class="result"><b>Kết quả mong đợi:</b><pre>{1: 1, 2: 4, 3: 9, 4: 16, 5: 25}</pre></div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer">
+<pre><code># Dict comprehension = cách tạo dict ngắn gọn
+# so là key, so ** 2 là value
+bang_binh_phuong = {
+    so: so ** 2
+    for so in range(1, 6)
+}
+
+print(bang_binh_phuong)</code></pre>
+</div>
+</div>
+
+<div class="exercise">
+<h4>Bài 9. So sánh shallow copy và deep copy</h4>
+<p><b>Tên file:</b> <span class="file">cuoichuong_09_copy.py</span></p>
+<div class="guide">
+<ol>
+<li>Tạo list lồng nhau.</li>
+<li>Tạo một shallow copy bằng <code>copy()</code>.</li>
+<li>Tạo một deep copy bằng <code>copy.deepcopy()</code>.</li>
+<li>Sửa phần tử trong list con của từng bản sao.</li>
+<li>Quan sát dữ liệu gốc.</li>
+</ol>
+</div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer">
+<pre><code>import copy
+
+# Dữ liệu gốc có list lồng nhau
+du_lieu_goc = [[1, 2], [3, 4]]
+
+# copy() = shallow copy, sao chép nông
+ban_sao_nong = du_lieu_goc.copy()
+
+# deepcopy() = deep copy, sao chép sâu
+ban_sao_sau = copy.deepcopy(du_lieu_goc)
+
+# Sửa phần tử lồng trong shallow copy
+ban_sao_nong[0][0] = 99
+
+print("Sau shallow copy:")
+print("Gốc:", du_lieu_goc)
+print("Bản sao nông:", ban_sao_nong)
+
+# Sửa deep copy
+ban_sao_sau[1][0] = 88
+
+print("Sau deep copy:")
+print("Gốc:", du_lieu_goc)
+print("Bản sao sâu:", ban_sao_sau)</code></pre>
+<div class="result"><b>Ý cần nhận xét:</b><pre>Shallow copy có thể làm dữ liệu lồng nhau của bản gốc thay đổi.
+Deep copy độc lập với dữ liệu gốc.</pre></div>
+</div>
+</div>
+
+<div class="exercise">
+<h4>Bài 10. Mutable và immutable khi truyền vào hàm</h4>
+<p><b>Tên file:</b> <span class="file">cuoichuong_10_mutable.py</span></p>
+<div class="guide">
+<ol>
+<li>Tạo một hàm thêm điểm vào list.</li>
+<li>Tạo một hàm đổi chuỗi thành chữ hoa.</li>
+<li>Gọi hai hàm.</li>
+<li>Quan sát list bị thay đổi trực tiếp nhưng chuỗi gốc không đổi.</li>
+</ol>
+</div>
+<button class="btn" onclick="toggleAnswer(this)">Xem lời giải tham khảo</button>
+<div class="answer">
+<pre><code># List là mutable = có thể thay đổi
+def them_diem(danh_sach_diem):
+    # append() thay đổi trực tiếp list được truyền vào
+    danh_sach_diem.append(10)
+
+
+# Chuỗi là immutable = không thể thay đổi trực tiếp
+def doi_ten(ten):
+    # upper() tạo chuỗi mới
+    ten_moi = ten.upper()
+
+    # Trả chuỗi mới
+    return ten_moi
+
+
+danh_sach_diem = [7, 8, 9]
+ten_sinh_vien = "An"
+
+# Hàm này làm list gốc thay đổi
+them_diem(danh_sach_diem)
+
+# Hàm này tạo chuỗi mới
+ten_moi = doi_ten(ten_sinh_vien)
+
+print("Danh sách điểm:", danh_sach_diem)
+print("Tên gốc:", ten_sinh_vien)
+print("Tên mới:", ten_moi)</code></pre>
+<div class="result"><b>Kết quả:</b><pre>Danh sách điểm: [7, 8, 9, 10]
+Tên gốc: An
+Tên mới: AN</pre></div>
+</div>
+</div>
+</section>
+
+</main>
+</div>
+<script>
+function toggleAnswer(btn){
+ const a=btn.nextElementSibling;
+ const show=a.style.display!=="block";
+ a.style.display=show?"block":"none";
+ btn.textContent=show?"Ẩn lời giải tham khảo":"Xem lời giải tham khảo";
+}
+function showAll(){document.querySelectorAll('.answer').forEach(x=>x.style.display='block')}
+function hideAll(){document.querySelectorAll('.answer').forEach(x=>x.style.display='none')}
+</script>
+</body>
+</html>
